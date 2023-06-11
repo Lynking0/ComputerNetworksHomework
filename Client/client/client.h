@@ -16,9 +16,9 @@ public:
     Client();
     ~Client();
     void createSocket();
-    void setAddrAndPort();
+    void setAddrAndPort(char *addr, u_short port);
     void connectServer();
-    void SendMsg();
+    void SendMsg(char *msg, u_short len);
 };
 
 #endif // CLIENT_H

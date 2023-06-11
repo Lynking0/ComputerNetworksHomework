@@ -18,6 +18,10 @@ set(PROJECT_SOURCES
         main.cpp
         client.cpp
         client.h
+        login_dialog.cpp
+        login_dialog.h
+        console.cpp
+        console.h
         mainwindow.cpp
         mainwindow.h
 )

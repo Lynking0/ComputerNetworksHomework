@@ -17,11 +17,11 @@ public:
     Server();
     ~Server();
     void createSocket();
-    void setAddrAndPort();
+    void setAddrAndPort(char *addr, u_short port);
     void bindSocket();
     void startListen();
     void waitClient();
-    void receiveMsg();
+    char *receiveMsg(bool &isEnd);
 };
 
 #endif // SERVER_H

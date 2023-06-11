@@ -18,6 +18,10 @@ set(PROJECT_SOURCES
         main.cpp
         server.cpp
         server.h
+        login_dialog.cpp
+        login_dialog.h
+        console.cpp
+        console.h
         mainwindow.cpp
         mainwindow.h
 )
@@ -54,6 +58,9 @@ set_target_properties(server PROPERTIES
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
+
+find_package(Qt6 REQUIRED COMPONENTS Concurrent)
+target_link_libraries(server PRIVATE Qt6::Concurrent)
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(server)

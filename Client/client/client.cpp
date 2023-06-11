@@ -22,12 +22,12 @@ void Client::createSocket()
     }
 }
 
-void Client::setAddrAndPort()
+void Client::setAddrAndPort(char *addr, u_short port)
 {
     // 设置服务器地址和端口号
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(52354); // 对应服务器的端口号
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // 对应服务器的IP地址
+    serverAddr.sin_port = htons(port);
+    serverAddr.sin_addr.s_addr = inet_addr(addr);
 }
 
 void Client::connectServer()
@@ -42,11 +42,11 @@ void Client::connectServer()
     }
 }
 
-void Client::SendMsg()
+void Client::SendMsg(char *msg, u_short len)
 {
     // 发送消息给服务器
-    char sendBuf[] = "Hello, server!";
-    iResult = send(clientSocket, sendBuf, sizeof(sendBuf), 0);
+    msg[len] = '\0';
+    iResult = send(clientSocket, msg, sizeof(char) * (len + 1), 0);
     if (iResult == SOCKET_ERROR)
         throw runtime_error("send failed with error.");
 }

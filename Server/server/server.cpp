@@ -22,12 +22,12 @@ void Server::createSocket()
     }
 }
 
-void Server::setAddrAndPort()
+void Server::setAddrAndPort(char *addr, u_short port)
 {
     // 设置服务器地址和端口号
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(52354);
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_port = htons(port);
+    serverAddr.sin_addr.s_addr = inet_addr(addr);
 }
 
 void Server::bindSocket()
@@ -66,17 +66,32 @@ void Server::waitClient()
     }
 }
 
-void Server::receiveMsg()
+char *Server::receiveMsg(bool &isEnd)
 {
     // 接收客户端发送的消息
-    char recvBuf[1024];
+    char *recvBuf = new char[1024];
     iResult = recv(clientSocket, recvBuf, sizeof(recvBuf), 0);
     if (iResult > 0)
-        cout << "received message from client: " << recvBuf << endl;
+    {
+        if (recvBuf[iResult - 1] == '\0')
+            isEnd = true;
+        else
+        {
+            isEnd = false;
+            recvBuf[iResult] = '\0';
+        }
+        return recvBuf;
+    }
     else if (iResult == 0)
-        cout << "connection closed by client" << endl;
+    {
+        delete[] recvBuf;
+        throw runtime_error("connection closed by client");
+    }
     else
-        cout << "recv failed with error: " << WSAGetLastError() << endl;
+    {
+        delete[] recvBuf;
+        return nullptr;
+    }
 }
 
 Server::~Server()

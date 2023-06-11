@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "server.h"
+#include "login_dialog.h"
 
 #include <QApplication>
 
@@ -7,13 +8,17 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
-    w.show();
-    Server server;
-    server.createSocket();
-    server.setAddrAndPort();
-    server.bindSocket();
-    server.startListen();
-    server.waitClient();
-    server.receiveMsg();
-    return a.exec();
+
+    LoginDialog loginDlg;
+
+    if (loginDlg.exec() == QDialog::Accepted)
+    {
+        w.server = loginDlg.server;
+        w.show();
+        return a.exec();
+    }
+    else
+    {
+        return 0;
+    }
 }
