@@ -7,34 +7,49 @@
 
 LoginDialog::LoginDialog(QWidget *parent) : QDialog(parent)
 {
-    setFixedSize(335, 180);
+    setFixedSize(335, 210);
+
+    ipv4RadioBtn = new QRadioButton(this);
+    ipv4RadioBtn->move(45, 20);
+    ipv4RadioBtn->setText(tr("ipv4"));
+
+    ipv6RadioBtn = new QRadioButton(this);
+    ipv6RadioBtn->move(115, 20);
+    ipv6RadioBtn->setText(tr("ipv6"));
+
+    ipvSelect = new QButtonGroup(this);
+    ipvSelect->addButton(ipv4RadioBtn, 0);
+    ipvSelect->addButton(ipv6RadioBtn, 1);
+
+    ipv4RadioBtn->setChecked(true);
+    ipv6RadioBtn->setChecked(false);
 
     addrLabel = new QLabel(this);
-    addrLabel->move(50, 30);
+    addrLabel->move(50, 60);
     addrLabel->setText(tr("ip address"));
 
     addrEditLine = new QLineEdit(this);
-    addrEditLine->move(130, 30);
+    addrEditLine->move(130, 60);
     addrEditLine->setPlaceholderText(tr("请输入服务器ip地址"));
     addrEditLine->setFixedSize(150, 20);
     addrEditLine->setText(tr("127.0.0.1"));
 
     portLabel = new QLabel(this);
-    portLabel->move(50, 80);
+    portLabel->move(50, 110);
     portLabel->setText(tr("port"));
 
     portEditLine = new QLineEdit(this);
-    portEditLine->move(130, 80);
+    portEditLine->move(130, 110);
     portEditLine->setPlaceholderText(tr("请输入服务器端口号"));
     portEditLine->setFixedSize(150, 20);
     portEditLine->setText(tr("56789"));
 
     loginBtn = new QPushButton(this);
-    loginBtn->move(50, 130);
+    loginBtn->move(50, 160);
     loginBtn->setText(tr("确认"));
 
     exitBtn = new QPushButton(this);
-    exitBtn->move(205, 130);
+    exitBtn->move(205, 160);
     exitBtn->setText(tr("退出"));
 
     waitingLabel = new QLabel(this);
@@ -44,6 +59,8 @@ LoginDialog::LoginDialog(QWidget *parent) : QDialog(parent)
     //信号与槽关联
     connect(loginBtn, &QPushButton::clicked, this, &LoginDialog::login);
     connect(exitBtn, &QPushButton::clicked, this, &LoginDialog::close);
+    connect(ipv4RadioBtn, &QRadioButton::clicked, this, &LoginDialog::setIpv4Default);
+    connect(ipv6RadioBtn, &QRadioButton::clicked, this, &LoginDialog::setIpv6Default);
 }
 
 LoginDialog::~LoginDialog()
@@ -54,6 +71,9 @@ LoginDialog::~LoginDialog()
     delete portEditLine;
     delete loginBtn;
     delete exitBtn;
+    delete ipv4RadioBtn;
+    delete ipv6RadioBtn;
+    delete ipvSelect;
     if (server != nullptr)
         delete server;
 }
@@ -64,8 +84,10 @@ void LoginDialog::login()
     server = nullptr;
     try
     {
-        server = new Server();
+        server = new Server(ipvSelect->checkedId());
         server->createSocket();
+        if (ipvSelect->checkedId())
+            server->enableIpv6();
         server->setAddrAndPort(addrEditLine->text().trimmed().toLatin1().data(), portEditLine->text().trimmed().toUShort());
         server->bindSocket();
         server->startListen();
@@ -76,6 +98,8 @@ void LoginDialog::login()
         portEditLine->hide();
         loginBtn->hide();
         exitBtn->hide();
+        ipv4RadioBtn->hide();
+        ipv6RadioBtn->hide();
         waitingLabel->setText(QString("ip address: ") + addrEditLine->text().trimmed() + QString('\n') +
                               QString("port: ") + portEditLine->text().trimmed() + QString('\n') +
                               tr("正在等待客户端的连接请求..."));
@@ -108,6 +132,8 @@ void LoginDialog::login()
         portEditLine->show();
         loginBtn->show();
         exitBtn->show();
+        ipv4RadioBtn->show();
+        ipv6RadioBtn->show();
         waitingLabel->hide();
 
         // 清空输入框并设置焦点
@@ -115,4 +141,16 @@ void LoginDialog::login()
         portEditLine->clear();
         addrEditLine->setFocus();
     }
+}
+
+void LoginDialog::setIpv4Default()
+{
+    addrEditLine->setText(tr("127.0.0.1"));
+    portEditLine->setText(tr("56789"));
+}
+
+void LoginDialog::setIpv6Default()
+{
+    addrEditLine->setText(tr("2001:db8::1"));
+    portEditLine->setText(tr("56789"));
 }

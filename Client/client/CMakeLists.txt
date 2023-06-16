@@ -22,6 +22,8 @@ set(PROJECT_SOURCES
         login_dialog.h
         console.cpp
         console.h
+        package_manager.cpp
+        package_manager.h
         mainwindow.cpp
         mainwindow.h
 )
@@ -58,6 +60,11 @@ set_target_properties(client PROPERTIES
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
+
+find_package(Qt6 REQUIRED COMPONENTS Concurrent)
+target_link_libraries(client PRIVATE Qt6::Concurrent)
+find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
+target_link_libraries(client PRIVATE Qt6::Core5Compat)
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(client)

@@ -7,6 +7,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QButtonGroup>
+#include <QRadioButton>
 
 class LoginDialog : public QDialog
 {
@@ -21,8 +23,14 @@ public:
 //槽函数
 private slots:
     void login();
+    void setIpv4Default();
+    void setIpv6Default();
 
 private:
+    QButtonGroup *ipvSelect;
+    QRadioButton *ipv4RadioBtn;
+    QRadioButton *ipv6RadioBtn;
+
     QLabel *addrLabel;
     QLabel *portLabel;
 

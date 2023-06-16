@@ -9,6 +9,11 @@
 #include <QFutureWatcher>
 #include "console.h"
 #include "server.h"
+#include "package_manager.h"
+
+const QString MSG_FLAG = QString(char(1));
+const QString FILE_FLAG = QString(char(2));
+const int PACKAGE_SIZE = (32 * 1024 - 1 - 1 - 4 - 4 - 4 - 64);
 
 class MainWindow : public QMainWindow
 {
@@ -26,14 +31,18 @@ public:
 private slots:
     void sendMsg();
     void clearConsole();
+    void selectFile();
     void handleWriteConsole(const QString &msg);
+    void handleReceiveFinish(const QString &fileName, const QByteArray &content);
 
 private:
+    PackageManager *packageManager;
     QFutureWatcher<void> *pwatcher;
 
     QLineEdit *msgEditLine;
     QPushButton *sendBtn;
     QPushButton *clearBtn;
+    QPushButton *selectBtn;
     Console *console;
 };
 #endif // MAINWINDOW_H
